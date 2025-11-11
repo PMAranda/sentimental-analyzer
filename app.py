@@ -1,6 +1,9 @@
 import streamlit as st
 import pickle
 import re
+from googletrans import Translator
+
+translator = Translator()
 
 def clean_text(tweet):
     tweet = re.sub(r'@\w+', '', tweet)                     # eliminar menciones
@@ -38,11 +41,14 @@ if st.button("Clasificar"):
     if tweet_input.strip() == "":
         st.warning("Escribe un tweet primero.")
     else:
+        result = translator.translate(tweet_input, src='es', dest='en')
         # Preprocesar y vectorizar
-        cleaned_tweet = preprocess(tweet_input)
+        cleaned_tweet = preprocess(result.text)
         vec = vectorizer.transform([cleaned_tweet])
 
         # Predecir sentimiento
         prediction = best_model.predict(vec)[0]
         sentiment = "Positivo 😊" if prediction == 1 else "Negativo 😡"
         st.success(f"El sentimiento es: {sentiment}")
+
+
